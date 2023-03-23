@@ -50,7 +50,7 @@ const addFilm = (e) => {
     }     
     if (checkFavFilm.checked)
     {
-        alert("Фильм добавлен в избранное");
+        console.log("Добавляем любимый фильм");
     }    
     recalc();    
     add.value = "";
