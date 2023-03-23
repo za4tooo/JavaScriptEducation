@@ -30,12 +30,33 @@ const movieDB = {
 const ad = document.querySelectorAll('.promo__adv img'),
     promo = document.querySelector('.promo__bg'),
     genre = promo.querySelector('.promo__genre'),
+    add = document.querySelector('.adding__input'),
+    btn = document.querySelector('button'),
+    checkFavFilm = document.getElementById("add-favorite"),
     promoList = document.querySelector('.promo__interactive-list');
  
 ad.forEach(item => {
     item.remove();
 });
 
+const addFilm = (e) => {
+    e.preventDefault();    
+    if(add.value.length > 21){
+        
+        movieDB.movies.push(add.value.substr(0, 21) + "...");  
+    }
+    else{
+        movieDB.movies.push(add.value);  
+    }     
+    if (checkFavFilm.checked)
+    {
+        alert("Фильм добавлен в избранное");
+    }    
+    recalc();    
+    add.value = "";
+};
+
+btn.addEventListener('click', addFilm);
 
 const delElem = (e) => {    
     let text = (e.target.parentNode.textContent);    
@@ -50,6 +71,7 @@ const delElem = (e) => {
     recalc();
 };
 
+
 function recalc() {
     promoList.innerHTML = "";
     movieDB.movies.sort();
@@ -61,7 +83,6 @@ function recalc() {
         `;
     });
     const dels = document.querySelectorAll('.delete');
-
     dels.forEach(del =>{
         del.addEventListener('click', delElem);
     });
