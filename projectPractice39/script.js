@@ -26,7 +26,7 @@ function myAnimation(){
 function logger (){
     if(i===3)
     {
-        clearInterval(timeId);
+        clearInterval(timeId); 
     }
     console.log('text');
     i++;
