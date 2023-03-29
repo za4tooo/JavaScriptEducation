@@ -35,19 +35,34 @@ window.addEventListener('DOMContentLoaded', () =>{
         }
    });
    //Timer
-   const deadline = '2023-03-29';
+   const deadline = '2023-03-30';
+
    function getTimeRemaining(endtime){
         const t = Date.parse(endtime) - Date.parse(new Date()),
             days = Math.floor(t / (1000 * 60 * 60 * 24)),
             hours = Math.floor((t / (1000 * 60 * 60)) % 24),
             minutes = Math.floor((t / 1000 / 60) % 60),
             seconds = Math.floor((t / 1000) % 60);
-    return {
-        'total': t,
-        'days': days,
-        'hours': hours,
-        'minutes': minutes,
-        'seconds': seconds
+        	if(seconds <= 0)
+            {
+                return {
+                    'total': 0,
+                    'days': 0,
+                    'hours': 0,
+                    'minutes': 0,
+                    'seconds': 0
+                }
+            }
+            else
+            {
+                return {
+                    'total': t,
+                    'days': days,
+                    'hours': hours,
+                    'minutes': minutes,
+                    'seconds': seconds
+            }
+    
     };
    }
    
@@ -70,7 +85,8 @@ window.addEventListener('DOMContentLoaded', () =>{
             seconds = timer.querySelector('#seconds'),
             timeInterval = setInterval(updateClock, 1000);
 
-        updateClock();    
+        updateClock(); 
+
         function updateClock(){
             const t = getTimeRemaining(endtime);
             days.innerHTML = getZero(t.days);
@@ -85,4 +101,101 @@ window.addEventListener('DOMContentLoaded', () =>{
    }
    setClock('.timer', deadline);
 
+   const modalTrigger = document.querySelectorAll('[data-modal]'),
+         modal = document.querySelector('.modal'),
+         modalCloseBtn = document.querySelectorAll('[data-close]');    
+
+    modalTrigger.forEach(btn =>{
+        btn. addEventListener('click', openModal); 
+    });   
+    
+    modalCloseBtn.forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+            closeModal();            
+        });
+    });   
+    
+
+    modal.addEventListener('click', (e) => {
+        if(e.target === modal)
+        {
+            closeModal();
+        }
+    }); 
+
+    document.addEventListener('keydown', (e) =>{
+        if(e.code === "Escape" && modal.classList.contains('show'))
+        {
+            closeModal();
+        }
+    });
+
+    function openModal()
+    {
+        modal.classList.add('show');
+        modal.classList.remove('hide'); 
+        document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
+    }
+
+    function closeModal()
+    {
+        modal.classList.add('hide');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    const modalTimerId = setTimeout(openModal, 3000);
+
+    function showModelByScroll(){
+        if(window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight)
+        {
+            openModal();
+            window.removeEventListener('scroll', showModelByScroll);
+        }
+    }
+
+    window.addEventListener('scroll', showModelByScroll);
+
+    //Используем классы для карточек
+
+    class MenuCard {
+        constructor(src, alt, title, description, price, parentSelector){
+            this.src = src;
+            this.alt = alt;
+            this.title = title;
+            this.description = description;
+            this.price = price;
+            this.parent= document.querySelector(parentSelector);
+            this.transfer = 70; 
+            this.changeToRUB();
+        }
+        changeToRUB(){
+            this.price = this.price * this.transfer; 
+        }
+        render(){
+            const element = document.createElement('div');
+            element.innerHTML = `<div class="menu__item">
+            <img src=${this.src} alt=${this.alt}>
+            <h3 class="menu__item-subtitle">${this.title}</h3>
+            <div class="menu__item-descr">${this.description}</div>
+            <div class="menu__item-divider"></div>
+            <div class="menu__item-price">
+                <div class="menu__item-cost">Цена:</div>
+                <div class="menu__item-total"><span>${this.price}</span> руб./день</div>
+            </div>
+        </div>`;
+
+        this.parent.append(element);
+        }
+    }
+    new MenuCard(
+        "img/tabs/vegy.jpg",
+        "vegy",
+        'Меню "Фитнес"',
+        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+        9,
+        '.menu .container'
+    ).render();
+
 });
+
